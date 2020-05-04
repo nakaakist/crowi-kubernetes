@@ -268,7 +268,15 @@ spec:
             - name: FILE_UPLOAD
               value: local
             - name: PASSWORD_SEED
-              value: mysecret
+              valueFrom:
+                secretKeyRef:
+                  name: crowi-secrets
+                  key: password-seed
+            - name: SECRET_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: crowi-secrets
+                  key: secret-token
       volumes:
         - name: crowi-pvc
           persistentVolumeClaim:
