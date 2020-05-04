@@ -203,18 +203,6 @@ spec:
             - containerPort: 8080
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: crowi-data
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: standard
-  resources:
-    requests:
-      storage: 200Mi
----
-apiVersion: v1
 kind: Service
 metadata:
   name: crowi-service
@@ -258,9 +246,6 @@ spec:
           image: crowi/crowi:1.7.9
           ports:
             - containerPort: 3000
-          volumeMounts:
-            - name: crowi-pvc
-              mountPath: /data/db
           env:
             - name: MONGO_URI
               value: mongodb://mongodb-service:27017/crowi
@@ -271,7 +256,7 @@ spec:
             - name: PLANTUML_URI
               value: //plantuml-service:8080
             - name: FILE_UPLOAD
-              value: local
+              value: aws
             - name: PASSWORD_SEED
               valueFrom:
                 secretKeyRef:
@@ -282,7 +267,3 @@ spec:
                 secretKeyRef:
                   name: crowi-secrets
                   key: secret-token
-      volumes:
-        - name: crowi-pvc
-          persistentVolumeClaim:
-            claimName: crowi-data
