@@ -1,36 +1,26 @@
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mongodb-data
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: standard
-  resources:
-    requests:
-      storage: 200Mi
----
-apiVersion: v1
 kind: Service
 metadata:
   name: mongodb-service
   labels:
     app: mongodb
 spec:
+  clusterIP: None
   selector:
     app: mongodb
   ports:
     - protocol: TCP
       port: 27017
-      targetPort: 27017
+  publishNotReadyAddresses: true
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: mongodb-deployment
+  name: mongodb-statefulset
   labels:
     app: mongodb
 spec:
+  serviceName: mongodb-service
   replicas: 1
   selector:
     matchLabels:
@@ -48,22 +38,15 @@ spec:
               mountPath: /data/db
           ports:
             - containerPort: 27017
-      volumes:
-        - name: mongodb-pvc
-          persistentVolumeClaim:
-            claimName: mongodb-data
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: elasticsearch-data
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: standard
-  resources:
-    requests:
-      storage: 200Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-pvc
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 2Gi
 ---
 apiVersion: v1
 kind: Service
@@ -72,20 +55,22 @@ metadata:
   labels:
     app: elasticsearch
 spec:
+  clusterIP: None
   selector:
-    app: elaticsearch
+    app: elasticsearch
   ports:
     - protocol: TCP
       port: 9200
-      targetPort: 9200
+  publishNotReadyAddresses: true
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: elasticsearch-deployment
+  name: elasticsearch-statefulset
   labels:
     app: elasticsearch
 spec:
+  serviceName: elasticsearch-service
   replicas: 1
   selector:
     matchLabels:
@@ -104,8 +89,10 @@ spec:
           ports:
             - containerPort: 9200
           env:
+            - name: LimitMEMLOCK
+              value: "infinity"
             - name: bootstrap.memory_lock
-              value: "true"
+              value: "false"
             - name: discovery.type
               value: single-node
             - name: xpack.graph.enabled
@@ -120,10 +107,10 @@ spec:
               value: "false"
             - name: ES_JAVA_OPTS
               value: "-Xms100m -Xmx100m"
-      volumes:
-        - name: elasticsearch-pvc
-          persistentVolumeClaim:
-            claimName: elasticsearch-data
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "0.1Gi"
       initContainers:
         - image: alpine:3.6
           command: ["/sbin/sysctl", "-w", "vm.max_map_count=262144"]
@@ -135,6 +122,15 @@ spec:
           name: elasticsearch-init-ulimit
           securityContext:
             privileged: true
+  volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-pvc
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 2Gi
 ---
 apiVersion: v1
 kind: Service
