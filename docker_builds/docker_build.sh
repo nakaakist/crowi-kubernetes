@@ -3,6 +3,7 @@ ES_IMAGE_NAME=elasticsearch-crowi
 BACKUP_IMAGE_NAME=backup-crowi
 RESTORE_IMAGE_NAME=restore-crowi
 MONGO_AWS_IMAGE_NAME=mongo-aws
+RESET_ES_IMAGE_NAME=reset-elasticsearch-crowi
 REPOSITORY=nakaakist
 docker image build -t ${ES_IMAGE_NAME} ./elasticsearch
 docker image tag ${ES_IMAGE_NAME} ${REPOSITORY}/${ES_IMAGE_NAME}
@@ -19,3 +20,7 @@ docker image push ${REPOSITORY}/${BACKUP_IMAGE_NAME}
 docker image build -t ${RESTORE_IMAGE_NAME} ./restore
 docker image tag ${RESTORE_IMAGE_NAME} ${REPOSITORY}/${RESTORE_IMAGE_NAME}
 docker image push ${REPOSITORY}/${RESTORE_IMAGE_NAME}
+
+docker image build -t ${RESET_ES_IMAGE_NAME} ./reset-elasticsearch
+docker image tag ${RESET_ES_IMAGE_NAME} ${REPOSITORY}/${RESET_ES_IMAGE_NAME}
+docker image push ${REPOSITORY}/${RESET_ES_IMAGE_NAME}

@@ -34,3 +34,9 @@ kubectl run --rm -it restore --image nakaakist/restore-crowi --env="ACCESS_KEY_I
 --env="SECRET_ACCESS_KEY=<your AWS secret access key for S3>" --env="BUCKET_NAME=<your S3 bucket name for Crowi>" \
 --env="BACKUP_FILE=<backup file name you want to use>" --env="MONGO_HOST=mongodb-service"
 ```
+
+## If search function does not work
+Try
+```
+kubectl apply -f ./jobs/reset-elasticsearch.yml
+```
