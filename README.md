@@ -17,3 +17,10 @@ to register the secrets.
 kubectl apply -f ./app
 ```
 to start the application.
+
+## Backup
+To make backups,
+```
+kubectl apply -f ./jobs/backup.yml
+```
+This command creates a cron job which uploads a backup of the database to AWS S3 at 0:00 everyday.
