@@ -8,18 +8,28 @@ Run
 kubectl apply -f ./setup/namespace.yml
 ```
 to create a namespace "crowi-prod."
-Then, create a context by using your kubectl to use "crowi-prod" namespace.  
+Then, create a context by using your kubectl to use "crowi-prod" namespace.
+
 Rename ./setup/secrets.yml.sample to ./setup/secrets.yml, and edit the secrets.
+
 Run
 ```
 kubectl apply -f ./setup/secrets.yml
 ```
 to register the secrets.
+
 Run
 ```
 kubectl apply -f ./app
 ```
 to start the application.
+
+Run
+```
+minikube ip
+```
+to obtain the IP address of minikube.  
+You can access the Crowi installation page at (minikube IP):30000 using your browser.
 
 ## Backup
 To make backups of the database, run
