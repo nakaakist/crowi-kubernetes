@@ -24,12 +24,9 @@ kubectl apply -f ./app
 ```
 to start the application.
 
-Run
-```
-minikube ip
-```
-to obtain the IP address of minikube.  
-You can access the Crowi installation page at (minikube IP):30000 using your browser.
+You can access the Crowi installation page at (external IP of crowi-service):30000 using your browser.
+
+You can also deploy the application on AWS by using app-aws/crowi.yml.
 
 ## Backup
 To make backups of the database, run
